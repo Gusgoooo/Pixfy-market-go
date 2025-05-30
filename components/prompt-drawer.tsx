@@ -9,7 +9,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Separator } from "@/components/ui/separator"
-import { Heart, Bookmark, Copy, Share, Download, MessageCircle, Send } from "lucide-react"
+import { Heart, Bookmark, Copy, Share, Download, MessageCircle, Send, ExternalLink } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
 
@@ -195,6 +195,39 @@ export function PromptDrawer({ prompt, open, onOpenChange }: PromptDrawerProps) 
                           {tag}
                         </Badge>
                       ))}
+                    </div>
+                  </div>
+
+                  {/* API Integration Section - Low-key placement */}
+                  <div className="border-t pt-4 mt-6">
+                    <div className="bg-muted/30 rounded-lg p-4 space-y-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-muted-foreground">API Integration</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            Integrate this prompt into your applications
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => window.open("/docs/api", "_blank")}
+                            className="text-xs h-8"
+                          >
+                            <ExternalLink className="h-3 w-3 mr-1" />
+                            Docs
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => window.open(`/purchase/${prompt.id}`, "_blank")}
+                            className="text-xs h-8"
+                          >
+                            Get API Access
+                          </Button>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </TabsContent>

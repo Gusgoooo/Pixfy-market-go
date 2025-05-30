@@ -65,12 +65,12 @@ export function PromptCard({ prompt, onClick }: PromptCardProps) {
 
   return (
     <Card
-      className="group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] w-64 h-80 lg:w-72 lg:h-96"
+      className="group cursor-pointer transition-all duration-200 hover:shadow-lg hover:scale-[1.02] w-full max-w-[280px]"
       onClick={onClick}
     >
-      <CardContent className="p-0 h-full flex flex-col">
+      <CardContent className="p-0 h-[360px] flex flex-col">
         {/* Image */}
-        <div className="relative flex-1 overflow-hidden rounded-t-lg">
+        <div className="relative h-48 overflow-hidden rounded-t-lg">
           <Image
             src={prompt.imageUrl || "/placeholder.svg"}
             alt={prompt.title}
@@ -94,7 +94,7 @@ export function PromptCard({ prompt, onClick }: PromptCardProps) {
         </div>
 
         {/* Content */}
-        <div className="p-4 space-y-3">
+        <div className="p-4 space-y-3 flex-1 flex flex-col justify-between">
           <div>
             <h3 className="font-semibold text-sm line-clamp-1">{prompt.title}</h3>
             <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{prompt.description}</p>

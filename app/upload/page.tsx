@@ -3,6 +3,9 @@
 import type React from "react"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
+import { createClient } from "@/lib/supabase/client"
+import { useAuth } from "@/components/auth/auth-provider"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -11,10 +14,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PromptRunner } from "@/components/prompt-runner"
-import { Upload, X, Plus } from "lucide-react"
+import { Upload, X, Plus, Loader2 } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 
 export default function UploadPage() {
+  const router = useRouter()
+  const { user } = useAuth()
+  const { toast } = useToast()
+  const supabase = createClient()
+
   const [formData, setFormData] = useState({
     title: "",
     prompt: "",
@@ -25,7 +33,12 @@ export default function UploadPage() {
   const [newTag, setNewTag] = useState("")
   const [previewImage, setPreviewImage] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const { toast } = useToast()
+
+  // 如果用户未登录，重定向到登录页
+  if (!user) {
+    router.push("/auth/login?redirect=/upload")
+    return null
+  }
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }))
@@ -54,36 +67,105 @@ export default function UploadPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+
+    if (!user) {
+      toast({
+        title: "Error",
+        description: "You must be logged in to upload prompts",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (!formData.title || !formData.prompt || !formData.platform) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      })
+      return
+    }
+
     setIsSubmitting(true)
 
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 2000))
+    try {
+      // 首先确保用户在 profiles 表中存在
+      const { data: profile, error: profileError } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single()
 
-    toast({
-      title: "Prompt uploaded successfully!",
-      description: "Your prompt has been added to the marketplace.",
-    })
+      if (profileError && profileError.code === "PGRST116") {
+        // 用户不存在，创建 profile
+        const { error: insertError } = await supabase.from("profiles").insert({
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name,
+          username: user.email?.split("@")[0], // 使用邮箱前缀作为默认用户名
+        })
 
-    // Reset form
-    setFormData({
-      title: "",
-      prompt: "",
-      description: "",
-      platform: "",
-      tags: [],
-    })
-    setPreviewImage(null)
-    setIsSubmitting(false)
+        if (insertError) {
+          console.error("Error creating profile:", insertError)
+          throw new Error("Failed to create user profile")
+        }
+      }
+
+      // 插入 prompt 数据
+      const { data, error } = await supabase
+        .from("prompts")
+        .insert({
+          title: formData.title,
+          prompt: formData.prompt,
+          description: formData.description,
+          platform: formData.platform,
+          tags: formData.tags,
+          author_id: user.id,
+          image_url: previewImage,
+          is_published: true,
+        })
+        .select()
+        .single()
+
+      if (error) throw error
+
+      toast({
+        title: "Success!",
+        description: "Your prompt has been uploaded successfully.",
+      })
+
+      // 重置表单
+      setFormData({
+        title: "",
+        prompt: "",
+        description: "",
+        platform: "",
+        tags: [],
+      })
+      setPreviewImage(null)
+
+      // 跳转到首页或详情页
+      router.push("/")
+    } catch (error: any) {
+      console.error("Error uploading prompt:", error)
+      toast({
+        title: "Error",
+        description: error.message || "Failed to upload prompt. Please try again.",
+        variant: "destructive",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8">
-      <div className="text-center space-y-4">
-        <h1 className="text-3xl font-bold">Upload Your Prompt</h1>
+    <div className="container mx-auto px-4 py-8">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold mb-2">Upload Your Prompt</h1>
         <p className="text-muted-foreground">Share your amazing prompts with the community</p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
         {/* Form */}
         <Card>
           <CardHeader>
@@ -92,7 +174,7 @@ export default function UploadPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title">Title *</Label>
                 <Input
                   id="title"
                   placeholder="Give your prompt a catchy title"
@@ -103,7 +185,7 @@ export default function UploadPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="prompt">Prompt</Label>
+                <Label htmlFor="prompt">Prompt *</Label>
                 <Textarea
                   id="prompt"
                   placeholder="Enter your full prompt here..."
@@ -126,7 +208,7 @@ export default function UploadPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="platform">Platform</Label>
+                <Label htmlFor="platform">Platform *</Label>
                 <Select value={formData.platform} onValueChange={(value) => handleInputChange("platform", value)}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select AI platform" />
@@ -165,8 +247,17 @@ export default function UploadPage() {
               </div>
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>
-                {isSubmitting ? "Uploading..." : "Upload Prompt"}
-                <Upload className="ml-2 h-4 w-4" />
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="mr-2 h-4 w-4" />
+                    Upload Prompt
+                  </>
+                )}
               </Button>
             </form>
           </CardContent>
