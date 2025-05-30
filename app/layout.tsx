@@ -35,8 +35,8 @@ export default async function RootLayout({
             <SidebarProvider>
               <div className="min-h-screen bg-background flex flex-col">
                 <Navigation />
-                <main className="flex-1 flex flex-col items-center">
-                  <div className="w-full max-w-7xl px-4 py-8">{children}</div>
+                <main className="flex-1">
+                  <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">{children}</div>
                 </main>
               </div>
               <Toaster />

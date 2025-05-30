@@ -181,19 +181,18 @@ export default function DashboardPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-center items-center min-h-[400px]">
-          <Loader2 className="h-8 w-8 animate-spin" />
-        </div>
+      <div className="flex justify-center items-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     )
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold mb-1">Dashboard</h1>
+          <h1 className="text-3xl font-bold">Dashboard</h1>
           <p className="text-muted-foreground">Manage your prompts and collections</p>
         </div>
         <Button asChild>
@@ -204,219 +203,215 @@ export default function DashboardPage() {
         </Button>
       </div>
 
-      <div className="max-w-6xl mx-auto">
-        <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="uploads">My Uploads ({myUploads.length})</TabsTrigger>
-            <TabsTrigger value="collections">My Collections ({myCollections.length})</TabsTrigger>
-            <TabsTrigger value="api">API Keys (0)</TabsTrigger>
-          </TabsList>
+      {/* Tabs */}
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="uploads">My Uploads ({myUploads.length})</TabsTrigger>
+          <TabsTrigger value="collections">My Collections ({myCollections.length})</TabsTrigger>
+          <TabsTrigger value="api">API Keys (0)</TabsTrigger>
+        </TabsList>
 
-          <TabsContent value="uploads" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Uploaded Prompts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {myUploads.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground mb-4">You haven't uploaded any prompts yet.</p>
-                    <Button asChild>
-                      <a href="/upload">Upload Your First Prompt</a>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="hidden md:block">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Platform</TableHead>
-                          <TableHead>Tags</TableHead>
-                          <TableHead>Stats</TableHead>
-                          <TableHead>Created</TableHead>
-                          <TableHead>Status</TableHead>
-                          <TableHead className="w-[50px]"></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {myUploads.map((upload) => (
-                          <TableRow key={upload.id}>
-                            <TableCell className="font-medium">{upload.title}</TableCell>
-                            <TableCell>
-                              <Badge variant="outline">{upload.platform}</Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-1">
-                                {upload.tags?.slice(0, 2).map((tag) => (
-                                  <Badge key={tag} variant="secondary" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {upload.tags && upload.tags.length > 2 && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    +{upload.tags.length - 2}
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                                <span className="flex items-center gap-1">
-                                  <Heart className="h-3 w-3" />
-                                  {upload.likes_count}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Bookmark className="h-3 w-3" />
-                                  {upload.collections_count}
-                                </span>
-                                <span className="flex items-center gap-1">
-                                  <Eye className="h-3 w-3" />
-                                  {upload.views_count}
-                                </span>
-                              </div>
-                            </TableCell>
-                            <TableCell>{new Date(upload.created_at).toLocaleDateString()}</TableCell>
-                            <TableCell>
-                              <Badge variant={upload.is_published ? "default" : "secondary"}>
-                                {upload.is_published ? "published" : "draft"}
-                              </Badge>
-                            </TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem onClick={() => handleEdit(upload.id)}>
-                                    <Edit className="mr-2 h-4 w-4" />
-                                    Edit
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem
-                                    onClick={() => handleDelete(upload.id)}
-                                    className="text-destructive"
-                                  >
-                                    <Trash2 className="mr-2 h-4 w-4" />
-                                    Delete
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="collections" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your Collected Prompts</CardTitle>
-              </CardHeader>
-              <CardContent>
-                {myCollections.length === 0 ? (
-                  <div className="text-center py-8">
-                    <p className="text-muted-foreground mb-4">You haven't collected any prompts yet.</p>
-                    <Button asChild>
-                      <a href="/">Browse Prompts</a>
-                    </Button>
-                  </div>
-                ) : (
-                  <div className="hidden md:block">
-                    <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Title</TableHead>
-                          <TableHead>Author</TableHead>
-                          <TableHead>Platform</TableHead>
-                          <TableHead>Tags</TableHead>
-                          <TableHead>Likes</TableHead>
-                          <TableHead>Collected</TableHead>
-                          <TableHead className="w-[50px]"></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {myCollections.map((item) => (
-                          <TableRow key={item.id}>
-                            <TableCell className="font-medium">{item.prompts.title}</TableCell>
-                            <TableCell>
-                              {item.prompts.profiles?.username || item.prompts.profiles?.full_name || "Unknown"}
-                            </TableCell>
-                            <TableCell>
-                              <Badge variant="outline">{item.prompts.platform}</Badge>
-                            </TableCell>
-                            <TableCell>
-                              <div className="flex gap-1">
-                                {item.prompts.tags?.slice(0, 2).map((tag) => (
-                                  <Badge key={tag} variant="secondary" className="text-xs">
-                                    {tag}
-                                  </Badge>
-                                ))}
-                                {item.prompts.tags && item.prompts.tags.length > 2 && (
-                                  <Badge variant="secondary" className="text-xs">
-                                    +{item.prompts.tags.length - 2}
-                                  </Badge>
-                                )}
-                              </div>
-                            </TableCell>
-                            <TableCell>
+        <TabsContent value="uploads" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Uploaded Prompts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {myUploads.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-muted-foreground mb-4">You haven't uploaded any prompts yet.</p>
+                  <Button asChild>
+                    <a href="/upload">Upload Your First Prompt</a>
+                  </Button>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Platform</TableHead>
+                        <TableHead>Tags</TableHead>
+                        <TableHead>Stats</TableHead>
+                        <TableHead>Created</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {myUploads.map((upload) => (
+                        <TableRow key={upload.id}>
+                          <TableCell className="font-medium">{upload.title}</TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{upload.platform}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              {upload.tags?.slice(0, 2).map((tag) => (
+                                <Badge key={tag} variant="secondary" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {upload.tags && upload.tags.length > 2 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{upload.tags.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground">
                               <span className="flex items-center gap-1">
                                 <Heart className="h-3 w-3" />
-                                {item.prompts.likes_count}
+                                {upload.likes_count}
                               </span>
-                            </TableCell>
-                            <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
-                            <TableCell>
-                              <DropdownMenu>
-                                <DropdownMenuTrigger asChild>
-                                  <Button variant="ghost" size="icon">
-                                    <MoreHorizontal className="h-4 w-4" />
-                                  </Button>
-                                </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end">
-                                  <DropdownMenuItem
-                                    onClick={() => handleRemoveFromCollection(item.id)}
-                                    className="text-destructive"
-                                  >
-                                    <Bookmark className="mr-2 h-4 w-4" />
-                                    Remove from Collection
-                                  </DropdownMenuItem>
-                                </DropdownMenuContent>
-                              </DropdownMenu>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </TabsContent>
+                              <span className="flex items-center gap-1">
+                                <Bookmark className="h-3 w-3" />
+                                {upload.collections_count}
+                              </span>
+                              <span className="flex items-center gap-1">
+                                <Eye className="h-3 w-3" />
+                                {upload.views_count}
+                              </span>
+                            </div>
+                          </TableCell>
+                          <TableCell>{new Date(upload.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <Badge variant={upload.is_published ? "default" : "secondary"}>
+                              {upload.is_published ? "published" : "draft"}
+                            </Badge>
+                          </TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleEdit(upload.id)}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleDelete(upload.id)} className="text-destructive">
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <TabsContent value="api" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Your API Keys</CardTitle>
-              </CardHeader>
-              <CardContent>
+        <TabsContent value="collections" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your Collected Prompts</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {myCollections.length === 0 ? (
                 <div className="text-center py-8">
-                  <p className="text-muted-foreground mb-4">No API keys yet. Purchase prompt access to get started.</p>
+                  <p className="text-muted-foreground mb-4">You haven't collected any prompts yet.</p>
                   <Button asChild>
                     <a href="/">Browse Prompts</a>
                   </Button>
                 </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-      </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Title</TableHead>
+                        <TableHead>Author</TableHead>
+                        <TableHead>Platform</TableHead>
+                        <TableHead>Tags</TableHead>
+                        <TableHead>Likes</TableHead>
+                        <TableHead>Collected</TableHead>
+                        <TableHead className="w-[50px]"></TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {myCollections.map((item) => (
+                        <TableRow key={item.id}>
+                          <TableCell className="font-medium">{item.prompts.title}</TableCell>
+                          <TableCell>
+                            {item.prompts.profiles?.username || item.prompts.profiles?.full_name || "Unknown"}
+                          </TableCell>
+                          <TableCell>
+                            <Badge variant="outline">{item.prompts.platform}</Badge>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex gap-1">
+                              {item.prompts.tags?.slice(0, 2).map((tag) => (
+                                <Badge key={tag} variant="secondary" className="text-xs">
+                                  {tag}
+                                </Badge>
+                              ))}
+                              {item.prompts.tags && item.prompts.tags.length > 2 && (
+                                <Badge variant="secondary" className="text-xs">
+                                  +{item.prompts.tags.length - 2}
+                                </Badge>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className="flex items-center gap-1">
+                              <Heart className="h-3 w-3" />
+                              {item.prompts.likes_count}
+                            </span>
+                          </TableCell>
+                          <TableCell>{new Date(item.created_at).toLocaleDateString()}</TableCell>
+                          <TableCell>
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="icon">
+                                  <MoreHorizontal className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem
+                                  onClick={() => handleRemoveFromCollection(item.id)}
+                                  className="text-destructive"
+                                >
+                                  <Bookmark className="mr-2 h-4 w-4" />
+                                  Remove from Collection
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="api" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Your API Keys</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center py-8">
+                <p className="text-muted-foreground mb-4">No API keys yet. Purchase prompt access to get started.</p>
+                <Button asChild>
+                  <a href="/">Browse Prompts</a>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }

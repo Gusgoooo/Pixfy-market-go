@@ -57,22 +57,26 @@ console.log('Generated image URL:', result.image_url);`
   }
 
   return (
-    <div className="w-full space-y-8">
-      <div className="text-center space-y-4 w-full max-w-2xl">
-        <div className="flex justify-center">
-          <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
-            <CheckCircle className="h-8 w-8 text-green-600" />
+    <div className="content-spacing">
+      {/* Header */}
+      <div className="grid-layout">
+        <div className="grid-col-12 text-center">
+          <div className="flex justify-center mb-4">
+            <div className="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center">
+              <CheckCircle className="h-8 w-8 text-green-600" />
+            </div>
           </div>
+          <h1 className="text-3xl font-bold mb-2">Purchase Successful!</h1>
+          <p className="text-muted-foreground">
+            Your API access has been activated. You can now integrate this prompt into your applications.
+          </p>
         </div>
-        <h1 className="text-3xl font-bold">Purchase Successful!</h1>
-        <p className="text-muted-foreground">
-          Your API access has been activated. You can now integrate this prompt into your applications.
-        </p>
       </div>
 
-      <div className="w-full max-w-4xl">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* API Key & Quick Start */}
+      {/* Content Grid */}
+      <div className="grid-layout">
+        {/* API Key & Quick Start */}
+        <div className="grid-col-12 grid-col-desktop-6">
           <Card>
             <CardHeader>
               <CardTitle>Your API Key</CardTitle>
@@ -131,8 +135,10 @@ console.log('Generated image URL:', result.image_url);`
               </div>
             </CardContent>
           </Card>
+        </div>
 
-          {/* Sample Code */}
+        {/* Sample Code */}
+        <div className="grid-col-12 grid-col-desktop-6">
           <Card>
             <CardHeader>
               <CardTitle>Sample Integration Code</CardTitle>

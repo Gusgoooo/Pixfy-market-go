@@ -124,15 +124,16 @@ export default function HomePage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto px-4">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">
-            Discover Amazing AI Prompts
-          </h1>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="text-center space-y-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">Discover Amazing AI Prompts</h1>
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Browse, collect, and share the best prompts for AI image generation
           </p>
         </div>
+
+        {/* Loading */}
         <div className="flex justify-center items-center min-h-[400px]">
           <Loader2 className="h-8 w-8 animate-spin" />
         </div>
@@ -141,18 +142,18 @@ export default function HomePage() {
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="text-center mb-8">
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4">Discover Amazing AI Prompts</h1>
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">Discover Amazing AI Prompts</h1>
         <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto">
           Browse, collect, and share the best prompts for AI image generation
         </p>
       </div>
 
       {/* Search and Filters */}
-      <div className="max-w-3xl mx-auto mb-8">
-        <div className="flex flex-col sm:flex-row gap-4 mb-4">
+      <div className="max-w-3xl mx-auto space-y-6">
+        <div className="flex flex-col sm:flex-row gap-4">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
@@ -190,12 +191,10 @@ export default function HomePage() {
       </div>
 
       {/* Results Count */}
-      <div className="max-w-7xl mx-auto mb-4">
-        <div className="text-sm text-muted-foreground">Showing {filteredPrompts.length} prompts</div>
-      </div>
+      <div className="text-sm text-muted-foreground">Showing {filteredPrompts.length} prompts</div>
 
       {/* Prompt Grid */}
-      <div className="max-w-7xl mx-auto">
+      <div className="space-y-6">
         {filteredPrompts.length === 0 ? (
           <div className="text-center py-12">
             <p className="text-muted-foreground">No prompts found. Try adjusting your search or filters.</p>

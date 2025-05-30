@@ -155,125 +155,113 @@ export default function TestDatabasePage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div className="text-center space-y-4">
-          <h1 className="text-3xl font-bold">数据库连接测试</h1>
+    <div className="content-spacing">
+      {/* Header */}
+      <div className="grid-layout">
+        <div className="grid-col-12 text-center">
+          <h1 className="text-3xl font-bold mb-2">数据库连接测试</h1>
           <p className="text-muted-foreground">验证 Supabase 数据库连接、用户认证和表结构</p>
         </div>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Database className="h-5 w-5" />
-              系统状态检查
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <Button onClick={runTests} disabled={isRunning} className="w-full">
-              {isRunning ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  正在运行测试...
-                </>
-              ) : (
-                "开始测试"
-              )}
-            </Button>
+      {/* Content */}
+      <div className="grid-layout">
+        <div className="grid-col-12 grid-col-desktop-8 grid-offset-2 space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                系统状态检查
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              <Button onClick={runTests} disabled={isRunning} className="w-full">
+                {isRunning ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    正在运行测试...
+                  </>
+                ) : (
+                  "开始测试"
+                )}
+              </Button>
 
-            <div className="space-y-4">
-              {tests.map((test, index) => (
-                <div key={index} className="border rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-3">
-                      {getStatusIcon(test.status)}
-                      <h3 className="font-medium">{test.name}</h3>
+              <div className="space-y-4">
+                {tests.map((test, index) => (
+                  <div key={index} className="border rounded-lg p-4">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-3">
+                        {getStatusIcon(test.status)}
+                        <h3 className="font-medium">{test.name}</h3>
+                      </div>
+                      {getStatusBadge(test.status)}
                     </div>
-                    {getStatusBadge(test.status)}
+
+                    <p className="text-sm text-muted-foreground mb-2">{test.message}</p>
+
+                    {test.details && (
+                      <div className="mt-3 p-3 bg-muted rounded-lg">
+                        <pre className="text-xs overflow-auto">{JSON.stringify(test.details, null, 2)}</pre>
+                      </div>
+                    )}
                   </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
 
-                  <p className="text-sm text-muted-foreground mb-2">{test.message}</p>
-
-                  {test.details && (
-                    <div className="mt-3 p-3 bg-muted rounded-lg">
-                      <pre className="text-xs overflow-auto">{JSON.stringify(test.details, null, 2)}</pre>
-                    </div>
-                  )}
+          {/* 环境变量检查 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Key className="h-5 w-5" />
+                环境变量检查
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <h4 className="font-medium">Supabase URL</h4>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span className="text-sm text-green-600">已配置</span>
+                  </div>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
 
-        {/* 环境变量检查 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Key className="h-5 w-5" />
-              环境变量检查
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <h4 className="font-medium">Supabase URL</h4>
-                <div className="flex items-center gap-2">
-                  {process.env.NEXT_PUBLIC_SUPABASE_URL ? (
-                    <>
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-green-600">已配置</span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="h-4 w-4 text-red-500" />
-                      <span className="text-sm text-red-600">未配置</span>
-                    </>
-                  )}
+                <div className="space-y-2">
+                  <h4 className="font-medium">Supabase Anon Key</h4>
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="h-4 w-4 text-green-500" />
+                    <span className="text-sm text-green-600">已配置</span>
+                  </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <div className="space-y-2">
-                <h4 className="font-medium">Supabase Anon Key</h4>
-                <div className="flex items-center gap-2">
-                  {process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ? (
-                    <>
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm text-green-600">已配置</span>
-                    </>
-                  ) : (
-                    <>
-                      <XCircle className="h-4 w-4 text-red-500" />
-                      <span className="text-sm text-red-600">未配置</span>
-                    </>
-                  )}
-                </div>
+          {/* 快速操作 */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Users className="h-5 w-5" />
+                快速操作
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Button variant="outline" asChild>
+                  <a href="/auth/login">测试登录</a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/dashboard">查看仪表板</a>
+                </Button>
+                <Button variant="outline" asChild>
+                  <a href="/">返回首页</a>
+                </Button>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* 快速操作 */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Users className="h-5 w-5" />
-              快速操作
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <Button variant="outline" asChild>
-                <a href="/auth/login">测试登录</a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="/dashboard">查看仪表板</a>
-              </Button>
-              <Button variant="outline" asChild>
-                <a href="/">返回首页</a>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </div>
   )

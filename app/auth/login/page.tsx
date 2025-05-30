@@ -21,7 +21,7 @@ export default async function LoginPage({
   }
 
   return (
-    <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center py-12">
+    <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center">
       <AuthForm />
     </div>
   )

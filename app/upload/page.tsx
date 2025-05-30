@@ -159,12 +159,14 @@ export default function UploadPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-3xl font-bold mb-2">Upload Your Prompt</h1>
+    <div className="space-y-8">
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <h1 className="text-3xl font-bold">Upload Your Prompt</h1>
         <p className="text-muted-foreground">Share your amazing prompts with the community</p>
       </div>
 
+      {/* Form Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
         {/* Form */}
         <Card>
